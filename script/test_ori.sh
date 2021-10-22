@@ -1,0 +1,1 @@
+sudo /usr/local/anaconda3/envs/tf_1/bin/python model_test.py 

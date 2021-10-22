@@ -1,0 +1,1 @@
+sudo /usr/local/anaconda3/envs/tf_1/bin/python hq_wav2lip_train.py --data_root /home/wgl/Wav2Lip-master/lrs2_preprocessed/ --checkpoint_dir checkpoints/1013_original_114/ --syncnet_checkpoint_path checkpoints/lipsync_expert.pth
