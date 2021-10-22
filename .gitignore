@@ -9,6 +9,8 @@ generated_data/*
 face_detection/__pycache__
 models/__pycache__/*
 models/lipreading/__pycache__/*
+models/i3d/flow_imagenet.pt
+models/lipreading/lipreading_best.pth
 options/__pycache__/*
 utils/__pycache__/*
 temp/*
