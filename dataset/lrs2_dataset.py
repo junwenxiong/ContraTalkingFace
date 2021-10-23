@@ -155,7 +155,7 @@ class LRS2Dataset(object):
                 wavpath = join(vidname, "audio.wav")
                 wav = audio.load_wav(wavpath, self.args.sample_rate)
 
-                orig_mel = audio.melspectrogram(wav).T
+                orig_mel = audio.melspectrogram(self.args, wav).T
             except Exception as e:
                 continue
 
