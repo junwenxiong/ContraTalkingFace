@@ -4,7 +4,6 @@ import torch
 import datetime
 from utils import utils
 from utils.logger import Logger, print_dict
-from hparams import hparams
 
 
 class BaseOption():
@@ -120,10 +119,10 @@ class BaseOption():
             default=7600,
             help='To be increased/reduced depending on data')
 
-        self.parser.add_argument('--img_size', default=96)
-        self.parser.add_argument('--fps', default=25)
-        self.parser.add_argument('--batch_size', default=16)
-        self.parser.add_argument('--num_workers', default=8, help='')
+        self.parser.add_argument('--img_size', default=96, type=int)
+        self.parser.add_argument('--fps', default=25, type=int)
+        self.parser.add_argument('--batch_size', default=16, type=int)
+        self.parser.add_argument('--num_workers', default=8, type=int, help='')
         self.initialized = True
 
     def parse(self):
