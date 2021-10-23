@@ -135,12 +135,19 @@ class LRS2Dataset(object):
             wrong_img_name = random.choice(img_names)
             while wrong_img_name == img_name:
                 wrong_img_name = random.choice(img_names)
+            
+
+            inverse_img_name = random.choice(img_names)
+            while inverse_img_name == img_name or inverse_img_name == wrong_img_name:
+                inverse_img_name = random.choice(img_names)
 
             # 读取输入图片名称
             window_fnames = self.get_window(img_name)
             # 读取预测图片名称
             wrong_window_fnames = self.get_window(wrong_img_name)
-            if window_fnames is None or wrong_window_fnames is None:
+            inverse_window_fnames = self.get_window(inverse_img_name)
+
+            if window_fnames is None or wrong_window_fnames is None or inverse_window_fnames is None:
                 continue
 
             window = self.read_window(window_fnames)
@@ -149,6 +156,10 @@ class LRS2Dataset(object):
 
             wrong_window = self.read_window(wrong_window_fnames)
             if wrong_window is None:
+                continue
+
+            inverse_window = self.read_window(inverse_window_fnames)
+            if inverse_window is None:
                 continue
 
             try:
@@ -162,7 +173,7 @@ class LRS2Dataset(object):
             mel = self.crop_audio_window(orig_mel.copy(), img_name)
 
             # 反向mel
-            inverse_mel = self.crop_audio_window(orig_mel.copy(), wrong_img_name)
+            inverse_mel = self.crop_audio_window(orig_mel.copy(), inverse_img_name)
 
             if (mel.shape[0] != self.args.syncnet_mel_step_size):
                 continue
@@ -175,7 +186,7 @@ class LRS2Dataset(object):
             if indiv_mels is None: continue
 
             # 分割反向mel spectrogram
-            inverse_indiv_mels = self.get_segmented_mels(orig_mel.copy(), wrong_img_name)
+            inverse_indiv_mels = self.get_segmented_mels(orig_mel.copy(), inverse_img_name)
             if inverse_indiv_mels is None: continue
 
             # 处理视频帧
@@ -187,9 +198,11 @@ class LRS2Dataset(object):
             window[:, :, window.shape[2] // 2:] = 0.
             x = np.concatenate([window, wrong_window], axis=0)
 
-            inverse_y = wrong_window.copy()
-            wrong_window[:, :, wrong_window.shape[2] // 2:] = 0.
-            inverse_x = np.concatenate([wrong_window, window], axis=0)
+            # 其实，可以再取一次img_name，只要不与wrong_windows相等就行了
+            inverse_window = self.prepare_window(inverse_window)
+            inverse_y = inverse_window.copy()
+            inverse_window[:, :, inverse_window.shape[2] // 2:] = 0.
+            inverse_x = np.concatenate([inverse_window, wrong_window], axis=0)
 
             # 正向数据
             x = torch.FloatTensor(x)
@@ -203,4 +216,9 @@ class LRS2Dataset(object):
             inverse_mel = torch.FloatTensor(inverse_mel.T).unsqueeze(0)
             inverse_y = torch.FloatTensor(inverse_y)
 
-            return x, indiv_mels, mel, y, inverse_x, inverse_indiv_mels, inverse_mel, inverse_y
+            x = torch.cat([x.unsqueeze(0), inverse_x.unsqueeze(0)], dim=0)
+            indiv_mels = torch.cat([indiv_mels.unsqueeze(0), inverse_indiv_mels.unsqueeze(0)], dim=0)
+            mel = torch.cat([mel.unsqueeze(0), inverse_mel.unsqueeze(0)], dim=0)
+            y = torch.cat([y.unsqueeze(0), inverse_y.unsqueeze(0)], dim=0)
+
+            return x, indiv_mels, mel, y
