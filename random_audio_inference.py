@@ -14,7 +14,7 @@ from utils.checkpoint import load_test_model
 from options.test_options import TestOptions
 from utils.detectFaces import datagen
 from utils.utils import mkdirs
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 txtPath = '/home/wgl/Wav2Lip-original/filelists/test.txt'
 face_root  = '/home/wgl/data/main'
@@ -41,7 +41,7 @@ def extract_mels(audio_path, fps):
         audio_path = 'temp/temp.wav'
 
     wav = audio.load_wav(audio_path, 16000)
-    mel = audio.melspectrogram(wav)
+    mel = audio.melspectrogram(args, wav)
     print(mel.shape)
 
     if np.isnan(mel.reshape(-1)).sum() > 0:
