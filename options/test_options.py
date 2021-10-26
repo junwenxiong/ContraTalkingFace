@@ -4,12 +4,10 @@ from options.base_options import BaseOption
 class TestOptions(BaseOption):
     def initialize(self):
         BaseOption.initialize(self)
-        self.parser.add_argument(
-            '--data_type',
-            type=str,
-            default='LRS2',
-            help='dataset type'
-        )
+        self.parser.add_argument('--data_type',
+                                 type=str,
+                                 default='LRS2',
+                                 help='dataset type')
         self.parser.add_argument(
             '--outpath',
             type=str,
@@ -84,3 +82,14 @@ class TestOptions(BaseOption):
             help=
             'Prevent smoothing face detections over a short temporal window')
         self.mode = 'test'
+
+        self.parser.add_argument(
+            '--face',
+            type=str,
+            help='Filepath of video/image that contains faces to use',
+            required=True)
+        self.parser.add_argument(
+            '--audio',
+            type=str,
+            help='Filepath of video/audio file to use as raw audio source',
+            required=True)
